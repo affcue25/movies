@@ -15,13 +15,13 @@ interface YourMovieType {
 interface RootState {
   movie: {
     movies: YourMovieType[]; // Replace YourMovieType with your actual movie data type
+    favorites: YourMovieType[]; // Replace YourMovieType with your actual movie data type
   };
 }
 
 const store = configureStore({
   reducer: {
     movie: movieReducer,
-    movieFav: movieReducer,
   },
 });
 

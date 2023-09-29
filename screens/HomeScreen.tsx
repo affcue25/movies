@@ -25,6 +25,7 @@ function HomeScreen() {
   const handleSubmitMovie = (newMovieData:any) => {
     // Dispatch the addMovie action to add the new movie to Redux (My Movies)
     dispatch(addToFavorites(newMovieData));
+    navigation.navigate("AddMovie");
   };
 
 
