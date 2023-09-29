@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, Image, Button } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, Image, Button, TouchableOpacity } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../redux/store';
-import { addMovie } from '../redux/actions/movieActions';
+import { addMovie, addToFavorites } from '../redux/actions/movieActions';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import AddMovieModal from '../components/Modal';
 
 // Later move to .env
 const API_KEY = '66887066a285140001c7a7fd0639e457';
@@ -14,6 +16,17 @@ function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isModalVisible, setIsModalVisible] = useState(false); // Track modal visibility
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false); // Close the modal
+  };
+
+  const handleSubmitMovie = (newMovieData:any) => {
+    // Dispatch the addMovie action to add the new movie to Redux (My Movies)
+    dispatch(addToFavorites(newMovieData));
+  };
+
 
   const navigation = useNavigation();
   // Access movies from Redux store
@@ -80,12 +93,7 @@ function HomeScreen() {
       <Text style={{ fontSize: 24, fontWeight: 'bold', padding: 16, marginTop: 20 }}>
         All Movies
       </Text>
-      <Button
-        title="+"
-        onPress={() => {
-          navigation.navigate('AddMovie');
-        }}
-      />
+      
       <FlatList
         data={movies}
         keyExtractor={(item) => item.title}
@@ -104,6 +112,26 @@ function HomeScreen() {
         onEndReached={() => fetchMovies(page + 1)} // Load more data when reaching the end
         onEndReachedThreshold={0.15} // Trigger when 15% from the end
         ListFooterComponent={renderFooter()} // Show loading indicator or null
+      />
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          bottom: 20, // Adjust as needed
+          right: 20, // Adjust as needed
+          backgroundColor: 'blue', // Button background color
+          borderRadius: 30, // Adjust to make the button round
+          padding: 15,
+        }}
+        onPress={() => {
+          setIsModalVisible(true);
+        }}
+      >
+        <Ionicons name="add" size={32} color="white" />
+      </TouchableOpacity>
+      <AddMovieModal
+        isVisible={isModalVisible}
+        onClose={handleCloseModal}
+        onSubmit={handleSubmitMovie}
       />
     </View>
   );

@@ -21,6 +21,7 @@ interface RootState {
 const store = configureStore({
   reducer: {
     movie: movieReducer,
+    movieFav: movieReducer,
   },
 });
 
