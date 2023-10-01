@@ -3,6 +3,7 @@ import { addMovie, addToFavorites, removeFromFavorites } from '../actions/movieA
 
 // Initial state
 interface Movie {
+  id: number,
   title: string;
   overview: string;
   releaseDate: string;
@@ -32,7 +33,7 @@ const movieReducer = createReducer(initialState, (builder) => {
     })
     .addCase(removeFromFavorites, (state, action: PayloadAction<Movie>) => {
       // Remove movie from favorites
-      state.favorites = state.favorites.filter((id) => id !== action.payload);
+      state.favorites = state.favorites.filter((id) => id.id !== action.payload.id);
     });
 });
 

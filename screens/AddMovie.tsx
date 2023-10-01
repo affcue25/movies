@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, Button, FlatList, Image } from 'react-native';
+import { View, Text, Button, FlatList, Image, TouchableOpacity } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { removeFromFavorites } from '../redux/actions/movieActions';
 
 
 // Type for the navigation object
@@ -11,34 +13,43 @@ type AddMovieProps = {
   };
 
 function AddMovie() {
-  const navigation = useNavigation();
-  const movies = useSelector((state: RootState) => state.movie.favorites);
+  
+  const moviesFav = useSelector((state: RootState) => state.movie.favorites);
+  
+  const dispatch = useDispatch();
 
+  const toggleFavorite = (item:any) => {
+      dispatch(removeFromFavorites(item))
+  }
 
   return (
-    <View style={{flex:1}}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold', padding: 16, marginTop: 20 }}>
+    <View style={{flex:1, backgroundColor: 'black'}}>
+      <Text style={{ fontSize: 24, fontWeight: 'bold', padding: 16, marginTop: 20, color: 'white' }}>
         My Movies
       </Text>
       
       <FlatList
-        data={movies}
+        data={moviesFav}
         keyExtractor={(item) => item.title}
         renderItem={({ item }) => (
           <View style={{ padding: 16, }}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.title}</Text>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white' }}>{item.title}</Text>
             <Image
-              source={{ uri: `https://image.tmdb.org/t/p/w500/${item.posterPath}` }}
+              source={{ uri: item.id? `https://image.tmdb.org/t/p/w500/${item.posterPath}`: item.posterPath}}
               style={{ width: 300, height: 450 }}
             />
-            <Text>{item.overview}</Text>
-            <Text>Release Date: {item.releaseDate}</Text>
-            <Text>Rating: {item.rating}</Text>
+            <Text style={{textAlign: "justify", color: 'white'}}>{item.overview}</Text>
+            <Text style={{ color: 'white'}}>Release Date: {item.releaseDate}</Text>
+            <Text style={{ color: 'white'}}>Rating: {item.rating}</Text>
+            <TouchableOpacity onPress={() => toggleFavorite(item)}>
+              <MaterialCommunityIcons
+                name={'heart'}
+                size={24}
+                color={'red'}
+              />
+            </TouchableOpacity>
           </View>
         )}
-        // onEndReached={() => fetchMovies(page + 1)} // Load more data when reaching the end
-        // onEndReachedThreshold={0.15} // Trigger when 15% from the end
-        // ListFooterComponent={renderFooter()} // Show loading indicator or null
       />
     </View>
   );

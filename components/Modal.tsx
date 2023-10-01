@@ -1,3 +1,4 @@
+import { ImagePickerOptions, ImagePickerResult, MediaTypeOptions, launchCameraAsync, launchImageLibraryAsync } from 'expo-image-picker';
 import React, { useState } from 'react';
 import { View, Text, Modal, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -50,7 +51,7 @@ interface MovieData {
   overview: string;
   releaseDate: string;
   rating: number;
-  poster: string; // Store the poster image URL
+  posterPath: string; // Store the poster image URL
 }
 
 const AddMovieModal: React.FC<AddMovieModalProps> = ({ isVisible, onClose, onSubmit }) => {
@@ -59,19 +60,41 @@ const AddMovieModal: React.FC<AddMovieModalProps> = ({ isVisible, onClose, onSub
     overview: '',
     releaseDate: '',
     rating: 0,
-    poster: '', // Initially empty
+    posterPath: ''
   });
 
   const handleInputChange = (fieldName: keyof MovieData, value: string | number) => {
     setMovieData({ ...movieData, [fieldName]: value });
   };
 
-  const handlePosterSelection = (imageURI: string) => {
-    setMovieData({ ...movieData, poster: imageURI });
+  const handleCaptureImage = async() => {
+    const options: ImagePickerOptions = {
+      mediaTypes: MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    };
+    
+    const result: ImagePickerResult = await launchCameraAsync(options);
+    
+    if (!result.canceled) {
+      setMovieData({ ...movieData, posterPath: result.assets[0].uri });
+    }
   };
 
-  const handleCaptureImage = () => {
-    // Implement image capture logic here (e.g., using a library like react-native-image-picker)
+  const handlePosterSelection = async () => {
+    const options: ImagePickerOptions = {
+      mediaTypes: MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    };
+    
+    const result: ImagePickerResult = await launchImageLibraryAsync(options);
+    
+    if (!result.canceled) {
+      setMovieData({ ...movieData, posterPath: result.assets[0].uri });
+    }
   };
 
   const handleSubmit = () => {
@@ -84,7 +107,7 @@ const AddMovieModal: React.FC<AddMovieModalProps> = ({ isVisible, onClose, onSub
       overview: '',
       releaseDate: '',
       rating: 0,
-      poster: '',
+      posterPath: '',
     });
 
     // Close the modal
@@ -121,7 +144,7 @@ const AddMovieModal: React.FC<AddMovieModalProps> = ({ isVisible, onClose, onSub
       keyboardType="numeric"
     />
     <View style={styles.buttonContainer}>
-      <Button title="Select Poster" onPress={() => handlePosterSelection('imageURI')} />
+      <Button title="Select Poster" onPress={handlePosterSelection} />
       <Button title="Capture Image" onPress={handleCaptureImage} />
     </View>
     <View style={styles.buttonContainer}>
